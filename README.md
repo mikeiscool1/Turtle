@@ -127,7 +127,7 @@ Here are all the functions that can be used:
     `substr`, `number`, `split`
 
 - Other Functions:
-    `type`
+    `type`, `error`
 
 ## Constants
 As of now, there are only two constants. `PI` and `E`. `E` is Eulers number.

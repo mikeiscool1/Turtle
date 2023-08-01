@@ -34,4 +34,4 @@ export const {
 } = math;
 export const { push, slice, splice, pop, shift, join, length, indexOf, lastIndexOf, sort } = array;
 export const { substr, number, split } = string;
-export const { type } = other;
+export const { type, error } = other;
