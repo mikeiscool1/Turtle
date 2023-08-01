@@ -159,7 +159,8 @@ export function lexer(code: string): Token[] {
       const args = code
         .slice(beginArgsList + 1, endArgsList)
         .split(', ')
-        .map(arg => arg.trim());
+        .map(arg => arg.trim())
+        .filter(arg => arg.length > 0);
 
       const functionToken: FunctionDeclarationToken = {
         name,
