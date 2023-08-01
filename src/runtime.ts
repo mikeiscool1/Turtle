@@ -219,7 +219,7 @@ export class RunTime {
 
           const lineBefore = this.line;
           code[i] = this.runFunction(fn, token.args);
-          this.line = lineBefore;
+          this.jumpTo(lineBefore);
         }
 
         continue;
@@ -387,6 +387,7 @@ export class RunTime {
    */
   public findNextChain() {
     const token = this.code[0];
+
     if (
       !isKeyword(token) ||
       (token.keyword !== KeywordType.IF && token.keyword !== KeywordType.ELIF && token.keyword !== KeywordType.ELSE)
