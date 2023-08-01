@@ -33,18 +33,18 @@ export function lexer(code: string): Token[] {
 
     // check for string
     if (code[0] === '"') {
-      let prev = code[0];
-      for (let i = 1; i < code.length; i++) {
-        const c = code[i];
-        if (prev === '\\') continue;
-        if (c === '"') {
-          tokens.push(code.slice(1, i));
-          code = code.slice(i + 1);
+      const stringRegex = /^"((?:\\.|[^"\\])*)"/; // Regex to match a string including escape sequences
+      const match = code.match(stringRegex);
 
-          continue main;
-        }
+      if (match) {
+        const token = match[1].replace(/\\(.)/g, (match, escapedChar) => {
+          const escapeMap = { n: '\n', t: '\t', '\\': '\\' };
+          return escapeMap[escapedChar as keyof typeof escapeMap] || escapedChar;
+        });
+        tokens.push(token);
+        code = code.slice(match[0].length);
 
-        prev = code[i];
+        continue;
       }
 
       throw new Error('Unclosed quotation marks.');
