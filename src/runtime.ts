@@ -117,6 +117,7 @@ export class RunTime {
           continue;
         } else {
           this.findEnd();
+          this.next();
           continue;
         }
       }
