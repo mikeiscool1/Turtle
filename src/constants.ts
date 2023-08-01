@@ -42,7 +42,7 @@ export const operators = {
 };
 
 export const allowedVariableNameChars = 'abcdefghijklmnopqrstuvwyxzABCDEFGHIJKLMNOPQRSTUVWXYZ_0123456789';
-export const operatorWords = [OperatorType.NOT, OperatorType.IN];
+export const operatorWords = [OperatorType.AND, OperatorType.OR, OperatorType.XOR, OperatorType.NOT, OperatorType.IN];
 export const unaryOperators = [OperatorType.B_NOT, OperatorType.NOT];
 
 // able to be used within code
