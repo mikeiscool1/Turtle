@@ -8,7 +8,7 @@ import {
   isGroup,
   isVariable
 } from './typeguard';
-import { Expression, FunctionDeclarationToken, OperatorToken, Token, Types } from './types';
+import { Expression, FunctionDeclarationToken, KeywordToken, OperatorToken, Token, Types } from './types';
 
 import * as stdFunctions from './functions/functions';
 import * as operations from './operations/operations';
@@ -31,11 +31,6 @@ export class RunTime {
    * The current block you are in.
    */
   public currentBlock: BlockType[] = [];
-  /**
-   * Set to true when an if condition is false so it jumps directly to an elif or else statement.
-   * If this is false and an elif statement is reached, it will jump to the end of the chain.
-   */
-  public permitElifAndElse: boolean = false;
 
   constructor(script: Token[][]) {
     this.script = script;
@@ -67,39 +62,42 @@ export class RunTime {
 
       if (firstToken.keyword === KeywordType.EXIT) return process.exit(0);
 
-      if (firstToken.keyword === KeywordType.ELSE) {
-        if (!this.permitElifAndElse) {
-          this.findEnd();
-          continue;
-        }
-
-        this.permitElifAndElse = false;
-
-        this.next(true);
+      if (firstToken.keyword === KeywordType.ELIF || firstToken.keyword === KeywordType.ELSE) {
+        this.findEnd();
         continue;
       }
 
-      if (firstToken.keyword === KeywordType.IF || firstToken.keyword === KeywordType.ELIF) {
-        if (firstToken.keyword === KeywordType.ELIF && !this.permitElifAndElse) {
-          this.findEnd();
-          continue;
-        }
-
+      if (firstToken.keyword === KeywordType.IF) {
         const condition = this.evaluate(this.code);
-
         if (typeof condition !== 'boolean') throw new Error('If condition is not a boolean.');
 
-        if (firstToken.keyword === KeywordType.IF) this.currentBlock.push(BlockType.IF);
+        this.currentBlock.push(BlockType.IF);
 
         if (condition) {
-          this.permitElifAndElse = false;
-
           this.next();
           continue;
         } else {
-          this.permitElifAndElse = true;
+          while (true) {
+            this.findNextChain();
+            const nextChainFirstToken = this.code[0] as KeywordToken;
 
-          this.findNextChain();
+            if (nextChainFirstToken.keyword === KeywordType.ELIF) {
+              const condition = this.evaluate(this.code);
+              if (typeof condition !== 'boolean') throw new Error('Elif condition is not a boolean.');
+
+              if (condition) {
+                this.next();
+                break;
+              } else continue;
+            } else if (nextChainFirstToken.keyword === KeywordType.ELSE) {
+              this.next();
+              break;
+            } else {
+              // end
+              break;
+            }
+          }
+
           continue;
         }
       }
@@ -130,9 +128,8 @@ export class RunTime {
 
           this.jumpTo(loopBegin);
           continue;
-        } else if (lastBlock === BlockType.FUNCTION) {
+        } else if (lastBlock === BlockType.FUNCTION)
           return null;
-        }
 
         this.next();
         continue;
@@ -155,6 +152,10 @@ export class RunTime {
       }
 
       if (firstToken.keyword === KeywordType.RETURN) {
+        while (this.currentBlock.pop() !== BlockType.FUNCTION)
+          if (this.currentBlock.at(-1) === undefined)
+            break;
+
         const lastExpression = this.evaluate(this.code);
         return lastExpression;
       }
@@ -174,6 +175,7 @@ export class RunTime {
 
     this.jumpTo(fn.line + 1);
     this.currentBlock.push(BlockType.FUNCTION);
+
     for (let i = 0; i < fn.args.length; i++) this.variables.set(fn.args[i], args[i]);
 
     return this.run();
@@ -189,8 +191,10 @@ export class RunTime {
       const token = code[i];
 
       if (Array.isArray(token)) {
-        for (let i = 0; i < token.length; i++) if (!isExpression(token[i])) token[i] = this.evaluate([token[i]]);
-
+        const args = [...token];
+        for (let i = 0; i < token.length; i++) if (!isExpression(token[i]) || Array.isArray(token[i])) args[i] = this.evaluate([token[i]]);
+        
+        code[i] = args;
         continue;
       }
 
@@ -206,19 +210,21 @@ export class RunTime {
 
         const stdFn = stdFunctions[token.name as keyof typeof stdFunctions] as Function;
         if (stdFn) {
+          const args = [...token.args];
           for (let i = 0; i < token.args.length; i++)
-            if (!isExpression(token.args[i])) token.args[i] = this.evaluate([token.args[i]]);
+            if (!isExpression(token.args[i]) || Array.isArray(token.args[i])) args[i] = this.evaluate([token.args[i]]);
 
-          code[i] = stdFn(...token.args);
+          code[i] = stdFn(...args);
         } else {
           const fn = this.functions.get(token.name);
           if (!fn) throw new Error(`Function ${token.name} is not defined.`);
 
+          const args = [...token.args];
           for (let i = 0; i < token.args.length; i++)
-            if (!isExpression(token.args[i])) token.args[i] = this.evaluate([token.args[i]]);
+            if (!isExpression(token.args[i]) || Array.isArray(token.args[i])) args[i] = this.evaluate([token.args[i]]);
 
           const lineBefore = this.line;
-          code[i] = this.runFunction(fn, token.args);
+          code[i] = this.runFunction(fn, args);
           this.jumpTo(lineBefore);
         }
 
