@@ -6,6 +6,8 @@ import { KeywordToken } from './types';
 
 console.log('TL-SHELL (Turtle Shell)\nRun "exit" or Ctrl+C to exit the shell.');
 
+const runtime = new RunTime([]);
+
 while (true) {
   const input = readline.question(': ');
   if (input.trim() === 'exit') process.exit(0);
@@ -20,18 +22,20 @@ function run(script: string[]) {
     try {
       const lex = lexer(line);
       lexScript.push(lex);
-    } catch (e) {
-      throw e;
+    } catch (e: any) {
+      console.error(`Lexer error at line ${i + 1}: ${e.message}`);
     }
   }
 
   // avoid exiting
   lexScript.push([{ keyword: KeywordType.RETURN } as KeywordToken]);
 
-  const runtime = new RunTime(lexScript);
+  runtime.script = lexScript;
+  runtime.jumpTo(0);
+  
   try {
     runtime.run();
   } catch (e: any) {
-    console.error(`Runtime error at line ${runtime.line + 1}: ${e.stack}`);
+    console.error(`Runtime error at line ${runtime.line + 1}: ${e.message}`);
   }
 }
