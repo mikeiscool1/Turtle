@@ -16,7 +16,7 @@ export function in_(l: Expression, r: Expression) {
 }
 
 export function dot(runtime: RunTime, l: Expression, r: Expression) {
-  if (!isFunctionCall(r)) throw 'Right hand side of `.` opeartor must be a function.';
+  if (!isFunctionCall(r)) throw new Error('Right hand side of `.` opeartor must be a function.');
 
   const stdFn = stdFunctions[r.name as keyof typeof stdFunctions] as Function;
   if (stdFn) {
