@@ -294,7 +294,7 @@ export class RunTime {
         continue;
       }
 
-      if (token.operator !== head.operator)
+      if (token.operator !== head.operator || token.operator === OperatorType.INDEX)
         while (pfStack.length > 0 && operations.precedence(head.operator) >= operations.precedence(token.operator)) {
           postfix.push(head);
           pfStack.pop();
