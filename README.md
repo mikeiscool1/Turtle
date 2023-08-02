@@ -1,6 +1,5 @@
 # Turtle <img src="./logo.png" alt="Markdown Monster icon" style="float: left; margin-right: 10px; width: 60px; margin-top: -10px; border-radius: 20px;">
 
-<br>
 Turtle is a JavaScript based programming language written in TypeScript. It is syntactically similar to Lua. It doesn't have a useful purpose as it was created for fun. Turtle does not include file system and internet access making it safe for anyone to run. This programming language is relatively simple, only consisting of basic control flow and basic operators and functions. There is no memory management, including variables being deleted when they exit the scope they were defined in. Turtle checks and throws a lot of errors, but may ignore bad syntax leading to undefined behavior. Turtle also evaluates expressions by converting it to postfix notation and then evaluating it from there. This means that you can write your expressions in [infix notation](https://en.wikipedia.org/wiki/Infix_notation) and [postfix notation](https://en.wikipedia.org/wiki/Reverse_Polish_notation), they will both work. For example, `5 + 5` and `5 5 +` will both return `10`. Turtle is a fairly slow language (making the name pretty fitting), and should not be used for projects that require fast performance. Finally, Turtle is in a very early stage, meaning it is very suspectable to bugs.
 
 <hr>
