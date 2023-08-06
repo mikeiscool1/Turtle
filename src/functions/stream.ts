@@ -10,6 +10,6 @@ export function print(...message: Expression[]) {
 export function prompt(message: Expression) {
   if (message && typeof message !== 'string') throw new Error('Prompt message must be a string or void.');
 
-  const answer = readline.question(message ?? '', {  });
+  const answer = readline.question(message ?? '', {});
   return answer;
 }

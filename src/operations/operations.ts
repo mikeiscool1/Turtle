@@ -71,7 +71,7 @@ export function precedence(operator: OperatorType): number {
   switch (operator) {
     case OperatorType.MINUS:
       return 9;
-      
+
     case OperatorType.POWER:
       return 8;
     case OperatorType.INDEX:

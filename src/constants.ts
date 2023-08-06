@@ -38,18 +38,18 @@ export const operators = {
   '<=': OperatorType.LESS_THAN_EQUAL,
   '->': OperatorType.INDEX,
   in: OperatorType.IN,
-  '.': OperatorType.DOT,
+  '.': OperatorType.DOT
 };
 
 export const allowedVariableNameChars = 'abcdefghijklmnopqrstuvwyxzABCDEFGHIJKLMNOPQRSTUVWXYZ_0123456789';
 export const operatorWords = [OperatorType.AND, OperatorType.OR, OperatorType.XOR, OperatorType.NOT, OperatorType.IN];
 export const valueWords = {
-  'true': true,
-  'false': false,
-  'void': null,
-  'NaN': NaN,
-  'infinity': Infinity
-}
+  true: true,
+  false: false,
+  void: null,
+  NaN: NaN,
+  infinity: Infinity
+};
 export const unaryOperators = [OperatorType.B_NOT, OperatorType.NOT, OperatorType.MINUS];
 
 // able to be used within code

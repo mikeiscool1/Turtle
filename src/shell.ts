@@ -16,7 +16,7 @@ while (true) {
     const output = run(input);
     console.log(output);
   } catch (e: any) {
-    console.error(e)
+    console.error(e);
   }
 }
 
@@ -31,7 +31,7 @@ function run(line: string) {
 
   runtime.script = [lexScript];
   runtime.jumpTo(0);
-  
+
   try {
     return runtime.run();
   } catch (e: any) {

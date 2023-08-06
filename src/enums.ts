@@ -39,7 +39,7 @@ export enum OperatorType {
   IN,
   OPEN_PAREN, // ( - not used for function calls or declarations. Same as closed.
   CLOSED_PAREN, // )
-  DOT, // .
+  DOT // .
 }
 
 export enum BlockType {

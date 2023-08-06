@@ -21,7 +21,8 @@ export function dot(runtime: RunTime, l: Expression, r: Expression) {
   const stdFn = stdFunctions[r.name as keyof typeof stdFunctions] as Function;
   if (stdFn) {
     const args = [...r.args];
-    for (let i = 0; i < r.args.length; i++) if (!isExpression(r.args[i]) || Array.isArray(r.args[i])) args[i] = runtime.evaluate([r.args[i]]);
+    for (let i = 0; i < r.args.length; i++)
+      if (!isExpression(r.args[i]) || Array.isArray(r.args[i])) args[i] = runtime.evaluate([r.args[i]]);
 
     return stdFn(l, ...args);
   }

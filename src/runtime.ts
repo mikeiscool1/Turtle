@@ -126,8 +126,7 @@ export class RunTime {
 
           this.jumpTo(loopBegin);
           continue;
-        } else if (lastBlock === BlockType.FUNCTION)
-          return null;
+        } else if (lastBlock === BlockType.FUNCTION) return null;
 
         this.next();
         continue;
@@ -150,9 +149,7 @@ export class RunTime {
       }
 
       if (firstToken.keyword === KeywordType.RETURN) {
-        while (this.currentBlock.pop() !== BlockType.FUNCTION)
-          if (this.currentBlock.at(-1) === undefined)
-            break;
+        while (this.currentBlock.pop() !== BlockType.FUNCTION) if (this.currentBlock.at(-1) === undefined) break;
 
         const lastExpression = this.evaluate(this.code.slice(1));
         return lastExpression;
@@ -190,8 +187,9 @@ export class RunTime {
 
       if (Array.isArray(token)) {
         const args = [...token];
-        for (let i = 0; i < token.length; i++) if (!isExpression(token[i]) || Array.isArray(token[i])) args[i] = this.evaluate([token[i]]);
-        
+        for (let i = 0; i < token.length; i++)
+          if (!isExpression(token[i]) || Array.isArray(token[i])) args[i] = this.evaluate([token[i]]);
+
         code[i] = args;
         continue;
       }
@@ -300,8 +298,7 @@ export class RunTime {
         if (previousWasOperator) {
           const isUnary = unaryOperators.includes(token.operator);
 
-          if (token.operator === OperatorType.SUB)
-            pfStack.push({ operator: OperatorType.MINUS });
+          if (token.operator === OperatorType.SUB) pfStack.push({ operator: OperatorType.MINUS });
 
           if (token.operator !== OperatorType.OPEN_PAREN && !isUnary) continue;
         }
@@ -328,7 +325,7 @@ export class RunTime {
         continue;
       }
 
-      if ((token.operator !== head.operator || token.operator === OperatorType.INDEX))
+      if (token.operator !== head.operator || token.operator === OperatorType.INDEX)
         while (pfStack.length > 0 && operations.precedence(head.operator) >= operations.precedence(token.operator)) {
           postfix.push(head);
           pfStack.pop();

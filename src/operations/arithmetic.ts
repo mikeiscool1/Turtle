@@ -11,10 +11,8 @@ export function add(l: Expression, r: Expression) {
 }
 
 export function sub(l: Expression, r: Expression) {
-  if (typeof l !== 'number')
-    throw new Error('Left hand side of `-` operator is not a number.');
-  if (typeof r !== 'number')
-    throw new Error('Right hand side of `-` operator is not a number.');
+  if (typeof l !== 'number') throw new Error('Left hand side of `-` operator is not a number.');
+  if (typeof r !== 'number') throw new Error('Right hand side of `-` operator is not a number.');
 
   return l - r;
 }
@@ -36,7 +34,7 @@ export function div(l: Expression, r: Expression) {
   if (typeof l !== 'number') throw new Error('Left hand side of `/` operator is not a number.');
   if (typeof r !== 'number') throw new Error('Right hand side of `/` operator is not a number.');
 
-  if (r === 0) throw new Error("Cannot divide by zero.");
+  if (r === 0) throw new Error('Cannot divide by zero.');
 
   return l / r;
 }

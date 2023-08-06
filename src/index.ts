@@ -10,7 +10,7 @@ if (scriptFile.length === 0) {
   process.exit(1);
 }
 
-let script: string[] = []; 
+let script: string[] = [];
 try {
   script = fs.readFileSync(scriptFile, 'utf8').split('\n');
 } catch {
