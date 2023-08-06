@@ -68,8 +68,7 @@ export class RunTime {
       }
 
       if (firstToken.keyword === KeywordType.IF) {
-        const condition = this.evaluate(this.code);
-        if (typeof condition !== 'boolean') throw new Error('If condition is not a boolean.');
+        const condition = Boolean(this.evaluate(this.code.slice(1)));
 
         this.currentBlock.push(BlockType.IF);
 
@@ -82,8 +81,7 @@ export class RunTime {
             const nextChainFirstToken = this.code[0] as KeywordToken;
 
             if (nextChainFirstToken.keyword === KeywordType.ELIF) {
-              const condition = this.evaluate(this.code);
-              if (typeof condition !== 'boolean') throw new Error('Elif condition is not a boolean.');
+              const condition = Boolean(this.evaluate(this.code.slice(1)));
 
               if (condition) {
                 this.next();
@@ -103,7 +101,7 @@ export class RunTime {
       }
 
       if (firstToken.keyword === KeywordType.WHILE) {
-        const condition = this.evaluate(this.code);
+        const condition = this.evaluate(this.code.slice(1));
 
         if (typeof condition !== 'boolean') throw new Error('While condition is not a boolean.');
 
@@ -156,7 +154,7 @@ export class RunTime {
           if (this.currentBlock.at(-1) === undefined)
             break;
 
-        const lastExpression = this.evaluate(this.code);
+        const lastExpression = this.evaluate(this.code.slice(1));
         return lastExpression;
       }
 
@@ -201,10 +199,27 @@ export class RunTime {
       if (isFunctionCall(token)) {
         const left = code[i - 1];
         if (isOperator(left) && left.operator === OperatorType.DOT) {
-          const expr = code[i - 2];
+          let expr = code[i - 2];
           if (!expr) throw new Error('Dot operator used without a left hand value.');
 
-          code.splice(i - 2, 3, operations.find(OperatorType.DOT)(this, this.evaluate([expr]), token));
+          if (isOperator(expr) && expr.operator === OperatorType.CLOSED_PAREN) {
+            let toGo = 1;
+            for (let j = i - 3; j >= 0; j--) {
+              const token = code[j];
+              if (!isOperator(token)) continue;
+              if (token.operator === OperatorType.CLOSED_PAREN) toGo++;
+              else if (token.operator === OperatorType.OPEN_PAREN) {
+                toGo--;
+                if (toGo === 0) {
+                  expr = this.evaluate(code.slice(j + 1, i - 2));
+                  code.splice(j, i - j - 1, expr);
+                  i = j + 2;
+                }
+              }
+            }
+          } else expr = this.evaluate([expr]);
+
+          code.splice(i - 2, 3, operations.find(OperatorType.DOT)(this, expr, token));
           continue;
         }
 
@@ -244,7 +259,8 @@ export class RunTime {
       const token = code[i];
       if (!isVariable(token)) continue;
 
-      const value = this.variables.get(token.name) ?? usableConstants[token.name as keyof typeof usableConstants];
+      let value = this.variables.get(token.name);
+      if (value === undefined) value = usableConstants[token.name as keyof typeof usableConstants];
       if (value === undefined) throw new Error(`${token.name} is not defined.`);
 
       code[i] = value;
@@ -267,6 +283,10 @@ export class RunTime {
     const pfStack: OperatorToken[] = [];
     const postfix = [];
 
+    // used to tell if a minus sign should be used in a unary way or not
+    // For example, 5 * -5
+    let previousWasOperator = true;
+
     // again only evaluate to the right of an assignment operator
     const assignmentOperatorIndex = code.findIndex(o => isOperator(o) && o.operator === OperatorType.ASSIGN);
     for (let i = assignmentOperatorIndex + 1; i < code.length; i++) {
@@ -274,10 +294,24 @@ export class RunTime {
 
       if (!isOperator(token)) {
         if (isExpression(token)) postfix.push(token);
+        previousWasOperator = false;
         continue;
+      } else {
+        if (previousWasOperator) {
+          const isUnary = unaryOperators.includes(token.operator);
+
+          if (token.operator === OperatorType.SUB)
+            pfStack.push({ operator: OperatorType.MINUS });
+
+          if (token.operator !== OperatorType.OPEN_PAREN && !isUnary) continue;
+        }
+
+        if (token.operator === OperatorType.CLOSED_PAREN) previousWasOperator = false;
+        else previousWasOperator = true;
       }
 
       let head = pfStack.at(-1);
+
       if (!head || token.operator === OperatorType.OPEN_PAREN) {
         pfStack.push(token);
         continue;
@@ -294,7 +328,7 @@ export class RunTime {
         continue;
       }
 
-      if (token.operator !== head.operator || token.operator === OperatorType.INDEX)
+      if ((token.operator !== head.operator || token.operator === OperatorType.INDEX))
         while (pfStack.length > 0 && operations.precedence(head.operator) >= operations.precedence(token.operator)) {
           postfix.push(head);
           pfStack.pop();
@@ -307,7 +341,7 @@ export class RunTime {
     for (let i = pfStack.length - 1; i >= 0; i--) postfix.push(pfStack[i]);
 
     // step 2: evaluate stack
-    const stack: Types[] = [];
+    let stack: Types[] = [];
     for (const token of postfix) {
       if (!isOperator(token)) {
         stack.push(token);
@@ -316,8 +350,7 @@ export class RunTime {
 
       const isUnary = unaryOperators.includes(token.operator);
       const right = stack.pop();
-      let left = !isUnary ? stack.pop() : null;
-      if (left === undefined) left = 0;
+      const left = !isUnary ? stack.pop() : null;
 
       const fn = operations.find(token.operator);
       const output = isUnary ? fn(right) : fn(left, right);
@@ -405,7 +438,7 @@ export class RunTime {
       const statement = this.code[0];
       if (!isKeyword(statement)) continue;
 
-      if (statement.keyword === KeywordType.IF) toGo++;
+      if (statement.keyword === KeywordType.IF || statement.keyword === KeywordType.WHILE) toGo++;
       else if (statement.keyword === KeywordType.END) {
         toGo--;
         if (toGo === 0) return;

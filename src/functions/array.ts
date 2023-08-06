@@ -6,7 +6,7 @@ export function push(array: Expression, value: Expression) {
   return array.push(value);
 }
 
-export function slice(array: Expression, begin: Expression, end: Expression) {
+export function slice(array: Expression, begin: Expression, end: Expression = Infinity) {
   if (!Array.isArray(array)) throw new Error('Argument `array` for `slice` must be an array.');
   if (typeof begin !== 'number') throw new Error('Argument `begin` for `slice` must be a number.');
   if (typeof end !== 'number') throw new Error('Argument `end` for `slice` must be a number.');

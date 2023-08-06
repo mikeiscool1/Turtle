@@ -1,0 +1,13 @@
+a = number(prompt("a: "))
+b = number(prompt("b: "))
+c = number(prompt("c: "))
+
+discriminant = b**2 - 4 * a * c
+if discriminant < 0
+  print("No real solution.")
+  exit
+end
+
+discriminantRoot = sqrt(discriminant)
+
+print("X₁ = " + (-b + discriminantRoot)/(2 * a) + "\nX₂ = " + (-b - discriminantRoot)/(2 * a))

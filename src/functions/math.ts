@@ -242,3 +242,19 @@ export function min(numbers: Expression) {
 
   return min;
 }
+
+export function gcd(a: Expression, b: Expression) {
+  if (typeof a !== 'number') throw new Error('Argument `a` for `gcd` must be a number.');
+  if (typeof b !== 'number') throw new Error('Argument `b` for `gcd` must be a number.');
+  let divisor = 1;
+
+  for (let i = 2; i <= a && i <= b; i++)
+    if (a % i === 0 && b % i === 0)
+      divisor = i;
+
+  return divisor;
+}
+
+export function isNaN(number: Expression) {
+  return Number.isNaN(number);
+}

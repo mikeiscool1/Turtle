@@ -1,0 +1,121 @@
+# THIS IMPLEMENTATION USES BITBOARDS TO REPRESENT THE BOARD
+
+x = 0
+o = 0
+
+function printGame()
+  finalStr = "+-+-+-+\n|"
+
+  i = 0
+  while i < 9
+    bit = 1 << i
+
+    if x & bit
+      finalStr = finalStr + "x|"
+    elif o & bit
+      finalStr = finalStr + "o|"
+    else
+      finalStr = finalStr + " |"
+    end
+
+    if i == 8
+      finalStr = finalStr + "\n+-+-+-+"
+    elif (i + 1) % 3 == 0
+      finalStr = finalStr + "\n+-+-+-+\n|"
+    end
+
+    i = i + 1
+  end
+
+  print(finalStr)
+end
+
+TOP_LEFT = 1 << 0
+TOP_MIDDLE = 1 << 1
+TOP_RIGHT = 1 << 2
+MIDDLE_LEFT = 1 << 3
+MIDDLE_MIDDLE = 1 << 4
+MIDDLE_RIGHT = 1 << 5
+BOTTOM_LEFT = 1 << 6
+BOTTOM_MIDDLE = 1 << 7
+BOTTOM_RIGHT = 1 << 8
+ALL = (1 << 9) - 1
+
+winCases = [TOP_LEFT + TOP_MIDDLE + TOP_RIGHT, MIDDLE_LEFT + MIDDLE_MIDDLE + MIDDLE_RIGHT, BOTTOM_LEFT + BOTTOM_MIDDLE + BOTTOM_RIGHT, TOP_LEFT + MIDDLE_LEFT + BOTTOM_LEFT, TOP_MIDDLE + MIDDLE_MIDDLE + BOTTOM_MIDDLE, TOP_RIGHT + MIDDLE_RIGHT + BOTTOM_RIGHT, TOP_LEFT + MIDDLE_MIDDLE + BOTTOM_RIGHT, TOP_RIGHT + MIDDLE_MIDDLE + BOTTOM_LEFT]
+
+function checkWin(bit)
+  i = 0
+  while i < winCases.length()
+    winCase = winCases->i
+    if bit & winCase == winCase
+      return true
+    end
+
+    i = i + 1
+  end
+
+  return false
+end
+
+function checkTie()
+  return (x | 0) & ALL == ALL
+end
+
+function checkAvailable(bit)
+  return (x | o) & bit == 0
+end
+
+# The code
+X_TURN = 0
+O_TURN = 1
+turn = X_TURN
+
+printGame()
+
+while true
+  if turn == X_TURN
+    square = number(prompt("X: "))
+  else
+    square = number(prompt("O: "))
+  end
+
+  if square < 1 or square > 9
+    print("Invalid square.")
+    continue
+  end
+
+  square = 1 << (square - 1)
+
+  if not checkAvailable(square)
+    print("That square is not available.")
+    continue
+  end
+
+  if turn == X_TURN
+    x = x | square
+    printGame()
+
+    if checkWin(x)
+      print("X won!")
+      break
+    end
+  else
+    o = o | square
+    printGame()
+
+    if checkWin(o)
+      print("O won!")
+      break
+    end
+  end
+ 
+  if checkTie()
+    print("Game ended in a draw.")
+  end
+
+  if turn == X_TURN
+    turn = O_TURN
+  else
+    turn = X_TURN
+  end
+end

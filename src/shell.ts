@@ -12,30 +12,29 @@ while (true) {
   const input = readline.question(': ');
   if (input.trim() === 'exit') process.exit(0);
 
-  run([`print(${input})`]);
+  try {
+    const output = run(input);
+    console.log(output);
+  } catch (e: any) {
+    console.error(e)
+  }
 }
 
-function run(script: string[]) {
-  const lexScript = [];
-  for (let i = 0; i < script.length; i++) {
-    const line = script[i];
-    try {
-      const lex = lexer(line);
-      lexScript.push(lex);
-    } catch (e: any) {
-      console.error(`Lexer error at line ${i + 1}: ${e.message}`);
-    }
+function run(line: string) {
+  const lexScript: any[] = [{ keyword: KeywordType.RETURN }];
+  try {
+    const lex = lexer(line);
+    lexScript.push(...lex);
+  } catch (e: any) {
+    throw `Lexer error: ${e.message}`;
   }
 
-  // avoid exiting
-  lexScript.push([{ keyword: KeywordType.RETURN } as KeywordToken]);
-
-  runtime.script = lexScript;
+  runtime.script = [lexScript];
   runtime.jumpTo(0);
   
   try {
-    runtime.run();
+    return runtime.run();
   } catch (e: any) {
-    console.error(`Runtime error at line ${runtime.line + 1}: ${e.message}`);
+    throw `Runtime error: ${e.message}`;
   }
 }

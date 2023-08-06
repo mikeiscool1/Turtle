@@ -1,0 +1,26 @@
+MAX = 1000
+MIN = 1
+MAX_ATTEMPTS = 10
+
+num = floor(random() * (MAX - MIN)) + MIN
+
+attempts = -1
+while attempts < MAX_ATTEMPTS
+  attempts = attempts + 1
+
+  guess = number(prompt("Guess: "))
+  if isNaN(guess) or num < MIN or num > MAX or truncate(guess) != guess
+    print("Invalid guess!")
+  end
+
+  if guess == num
+    print("You guessed correctly! Attempts taken: " + attempts + 1)
+    exit
+  elif num < guess
+    print("Lower!")
+  elif num > guess
+    print("Higher")
+  end
+end
+
+print("You were unable to guess the number! The number was " + num)

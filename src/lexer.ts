@@ -7,7 +7,7 @@ import type {
   Token,
   VariableToken
 } from './types';
-import { allowedVariableNameChars, keywords, operatorWords, operators } from './constants';
+import { allowedVariableNameChars, keywords, operatorWords, operators, valueWords } from './constants';
 import { OperatorType } from './enums';
 
 /**
@@ -76,7 +76,7 @@ export function lexer(code: string): Token[] {
       continue;
     }
 
-    // check for any keyword, word operators, booleans, and void
+    // check for any keyword, word operators, booleans, NaN, and void
     // note that booleans and void are NOT keywords
 
     let spaceIndex = code.indexOf(' ');
@@ -84,16 +84,9 @@ export function lexer(code: string): Token[] {
 
     const keywordString = code.slice(0, spaceIndex);
 
-    if (keywordString === 'true') {
-      tokens.push(true);
-      code = code.slice(spaceIndex + 1);
-      continue;
-    } else if (keywordString === 'false') {
-      tokens.push(false);
-      code = code.slice(spaceIndex + 1);
-      continue;
-    } else if (keywordString === 'void') {
-      tokens.push(null);
+    if (keywordString in valueWords) {
+      const value = valueWords[keywordString as keyof typeof valueWords];
+      tokens.push(value);
       code = code.slice(spaceIndex + 1);
       continue;
     }
@@ -191,7 +184,7 @@ export function lexer(code: string): Token[] {
     for (let i = 1; i < code.length; i++) {
       const c = code[i];
       // hyper lazy but whatever
-      if (c === '.') break;
+      if (c !== '(' && !allowedVariableNameChars.includes(c)) break;
 
       if (prev === ' ' && c !== ' ' && c !== '(') break;
 

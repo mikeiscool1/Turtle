@@ -30,7 +30,9 @@ export const {
   combinations,
   permutations,
   max,
-  min
+  min,
+  gcd,
+  isNaN
 } = math;
 export const { push, slice, splice, pop, shift, join, length, indexOf, lastIndexOf, sort } = array;
 export const { substr, number, split } = string;

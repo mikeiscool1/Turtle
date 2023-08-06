@@ -37,6 +37,8 @@ export function find(operator: OperatorType): Function {
       return arithmetic.add;
     case OperatorType.SUB:
       return arithmetic.sub;
+    case OperatorType.MINUS:
+      return arithmetic.minus;
     case OperatorType.MUL:
       return arithmetic.mul;
     case OperatorType.DIV:
@@ -67,6 +69,9 @@ export function find(operator: OperatorType): Function {
 
 export function precedence(operator: OperatorType): number {
   switch (operator) {
+    case OperatorType.MINUS:
+      return 9;
+      
     case OperatorType.POWER:
       return 8;
     case OperatorType.INDEX:
