@@ -338,7 +338,7 @@ export class RunTime {
     for (let i = pfStack.length - 1; i >= 0; i--) postfix.push(pfStack[i]);
 
     // step 2: evaluate stack
-    let stack: Types[] = [];
+    const stack: Types[] = [];
     for (const token of postfix) {
       if (!isOperator(token)) {
         stack.push(token);
