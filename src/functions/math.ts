@@ -152,6 +152,8 @@ export function abs(number: Expression) {
 
 export function factorial(number: Expression) {
   if (typeof number !== 'number') throw new Error('Argument `number` for `factorial` must be a number.');
+  if (number === 0) return 1;
+  else if (number < 0) return NaN;
 
   for (let i = number - 1; i > 0; i--) number *= i;
 
