@@ -35,11 +35,11 @@ export function shift(array: Expression) {
   return array.shift();
 }
 
-export function join(array: Expression, delimeter: Expression) {
+export function join(array: Expression, delimiter: Expression) {
   if (!Array.isArray(array)) throw new Error('Argument `array` for `join` must be an array.');
-  if (typeof delimeter !== 'string') throw new Error('Argument `delimeter` for `join` must be a string.');
+  if (typeof delimiter !== 'string') throw new Error('Argument `delimiter` for `join` must be a string.');
 
-  return array.join(delimeter);
+  return array.join(delimiter);
 }
 
 // supports both strings and arrays.

@@ -27,7 +27,7 @@ for (let i = 0; i < script.length; i++) {
     const lex = lexer(line);
     lexScript.push(lex);
   } catch (e: any) {
-    console.error(`Lexer error at line ${i + 1}: ${e.stack.slice(7)}`);
+    console.error(`Lexer error at line ${i + 1}: ${e.message}\n${e.stack.split('\n').slice(1).join('\n')}`);
     process.exit(1);
   }
 }
@@ -36,6 +36,6 @@ const runtime = new RunTime(lexScript);
 try {
   runtime.run();
 } catch (e: any) {
-  console.error(`Runtime error at line ${runtime.line + 1}: ${e.stack.slice(7)}`);
+  console.error(`Runtime error at line ${runtime.line + 1}: ${e.message}\n${e.stack.split('\n').slice(1).join('\n')}`);
   process.exit(1);
 }

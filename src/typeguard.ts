@@ -35,5 +35,5 @@ export function isVariable(token: Token): token is VariableToken {
 }
 
 export function isExpression(token: Token): token is Expression {
-  return typeof token !== 'object' || token === null || Array.isArray(token);
+  return typeof token !== 'object' || token === null || Array.isArray(token) || token instanceof RegExp;
 }

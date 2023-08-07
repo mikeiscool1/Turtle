@@ -128,6 +128,9 @@ Here are all the functions that can be used:
 - String Functions:
     `substr`, `number`, `split`
 
+- Regex Functions:
+    `regex`, `test`, `match`
+
 - Other Functions:
     `type`, `error`
 

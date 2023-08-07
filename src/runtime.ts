@@ -198,7 +198,7 @@ export class RunTime {
         const left = code[i - 1];
         if (isOperator(left) && left.operator === OperatorType.DOT) {
           let expr = code[i - 2];
-          if (!expr) throw new Error('Dot operator used without a left hand value.');
+          if (expr == null) throw new Error('Dot operator used without a left hand value.');
 
           if (isOperator(expr) && expr.operator === OperatorType.CLOSED_PAREN) {
             let toGo = 1;

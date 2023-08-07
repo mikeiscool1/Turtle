@@ -13,9 +13,9 @@ export function number(str: Expression) {
   return +str;
 }
 
-export function split(str: Expression, delimeter: Expression) {
+export function split(str: Expression, delimiter: Expression) {
   if (typeof str !== 'string') throw new Error('Argument `str` for `split` must be a string.');
-  if (typeof delimeter !== 'string') throw new Error('Argument `str` for `delimeter` must be a string.');
+  if (typeof delimiter !== 'string') throw new Error('Argument `str` for `delimiter` must be a string.');
 
-  return str.split(delimeter);
+  return str.split(delimiter);
 }
