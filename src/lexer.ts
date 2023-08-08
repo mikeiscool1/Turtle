@@ -276,17 +276,20 @@ function findClosingBracket(
   code: string,
   openBracket: string,
   closedBracket: string,
-  index: number,
-  ignoreStrings = true
+  index: number
 ) {
   if (code[index] !== openBracket) throw new Error('Index does not point to open bracket.');
 
   let inString = false;
+  let escape = false;
   let toGo = 1;
 
   for (let i = index + 1; i < code.length; i++) {
     const c = code[i];
-    if (ignoreStrings && c === '"' && code[i - 1] !== '\\') inString = !inString;
+    if (c === "\\") escape = !escape;
+    else escape = false;
+
+    if (c === '"' && !escape) inString = !inString;
 
     if (!inString) {
       if (c === openBracket) toGo++;
@@ -307,11 +310,15 @@ function separate(str: string) {
   let currentChunk = '';
   let stack = [];
   let inString = false;
+  let escape = false;
 
   for (let i = 0; i < str.length; i++) {
     const char = str[i];
 
-    if (char === '"' && (i === 0 || str[i - 1] !== '\\')) {
+    if (char === "\\") escape = !escape;
+    else escape = false;
+
+    if (char === '"' && !escape) {
       inString = !inString;
     }
 
